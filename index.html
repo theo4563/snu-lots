@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Snus Slots</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+}
+
+.container {
+    width: 320px;
+    margin: 100px auto;
+    background: #111;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    padding: 10px 20px;
+    background: gold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px;
+}
+
+button:hover {
+    background: orange;
+}
+
+.topbar {
+    background: black;
+    padding: 15px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hidden { display: none; }
+
+.game-box {
+    background: #222;
+    padding: 20px;
+    margin: 15px auto;
+    width: 300px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.cards {
+    font-size: 36px;
+    margin: 10px;
+}
+
+.card {
+    display: inline-block;
+    margin: 5px;
+    animation: drawCard 0.4s ease;
+}
+
+@keyframes drawCard {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.bet-box { margin: 10px; }
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+    <h2>🎰 Snus Slots Login</h2>
+    <input id="username" placeholder="Benutzername">
+    <input id="password" type="password" placeholder="Passwort (Demo)">
+    <button onclick="login()">Anmelden</button>
+    <p id="msg"></p>
+</div>
+
+<!-- CASINO -->
+<div id="casinoPage" class="hidden">
+
+    <div class="topbar">
+        <div>
+            👤 <span id="userText"></span> |
+            💰 <span id="balanceText"></span> Chips
+        </div>
+        <button onclick="logout()">Abmelden</button>
+    </div>
+
+    <!-- SPIELE -->
+    <div id="gameMenu">
+        <h1>🎮 Spiele</h1>
+        <div class="game-box" onclick="openBlackjack()">🃏 Blackjack</div>
+        <div class="game-box">🎰 Slots – kommt bald</div>
+        <div class="game-box">🎲 Roulette – kommt bald</div>
+    </div>
+
+    <!-- BLACKJACK -->
+    <div id="blackjack" class="hidden">
+        <h1>🃏 Blackjack</h1>
+
+        <!-- EINSATZ -->
+        <div class="bet-box">
+            Einsatz:
+            <button onclick="setBet(50)">50</button>
+            <button onclick="setBet(100)">100</button>
+            <button onclick="setBet(200)">200</button>
+            <p>Einsatz: <b><span id="betText">0</span></b></p>
+        </div>
+
+        <h3>Dealer</h3>
+        <div class="cards" id="dealerCards"></div>
+        <p>Summe: <span id="dealerSum"></span></p>
+
+        <hr>
+
+        <h3>Du</h3>
+        <div class="cards" id="playerCards"></div>
+        <p>Summe: <span id="playerSum"></span></p>
+
+        <button onclick="hit()">Karte ziehen</button>
+        <button onclick="stand()">Stand</button>
+        <button onclick="newGame()">Erneut spielen</button>
+        <button onclick="backToMenu()">Zurück</button>
+
+        <p id="result"></p>
+    </div>
+
+</div>
+
+<script>
+let balance = 1000;
+let bet = 0;
+let player = [];
+let dealer = [];
+let gameOver = false;
+
+const cards = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+function login() {
+    if (!username.value || !password.value) {
+        msg.innerText = "Bitte Benutzername & Passwort eingeben!";
+        return;
+    }
+    localStorage.setItem("snusUser", username.value);
+    localStorage.setItem("snusPass", password.value);
+    showCasino(username.value);
+}
+
+function logout() {
+    localStorage.removeItem("snusUser");
+    casinoPage.classList.add("hidden");
+    loginBox.style.display = "block";
+}
+
+function showCasino(user) {
+    loginBox.style.display = "none";
+    casinoPage.classList.remove("hidden");
+    userText.innerText = user;
+
+    let saved = localStorage.getItem("snusBalance");
+    if (saved) balance = parseInt(saved);
+    updateBalance();
+}
+
+function updateBalance() {
+    balanceText.innerText = balance;
+    localStorage.setItem("snusBalance", balance);
+}
+
+function openBlackjack() {
+    gameMenu.classList.add("hidden");
+    blackjack.classList.remove("hidden");
+    bet = 0;
+    betText.innerText = bet;
+    newGame();
+}
+
+function backToMenu() {
+    blackjack.classList.add("hidden");
+    gameMenu.classList.remove("hidden");
+}
+
+function setBet(amount) {
+    if (amount > balance) {
+        alert("Nicht genug Chips!");
+        return;
+    }
+    bet = amount;
+    betText.innerText = bet;
+}
+
+function draw() {
+    return cards[Math.floor(Math.random() * cards.length)];
+}
+
+function value(hand) {
+    let sum = 0;
+    hand.forEach(c => {
+        if (c === "A") sum += 11;
+        else if (["J","Q","K"].includes(c)) sum += 10;
+        else sum += parseInt(c);
+    });
+    return sum;
+}
+
+function newGame() {
+    if (bet === 0) {
+        result.innerText = "⚠️ Bitte zuerst Einsatz wählen!";
+        return;
+    }
+    player = [draw()];
+    dealer = [draw()];
+    gameOver = false;
+    result.innerText = "";
+    updateUI();
+}
+
+function hit() {
+    if (gameOver) return;
+    player.push(draw());
+    if (value(player) > 21) end("❌ Du hast verloren", -bet);
+    updateUI();
+}
+
+function stand() {
+    while (value(dealer) < 17) dealer.push(draw());
+
+    let p = value(player);
+    let d = value(dealer);
+
+    if (d > 21 || p > d) end("✅ Du hast gewonnen!", bet);
+    else if (p === d) end("➖ Unentschieden", 0);
+    else end("❌ Dealer gewinnt", -bet);
+
+    updateUI();
+}
+
+function end(text, money) {
+    gameOver = true;
+    balance += money;
+    updateBalance();
+    result.innerText = text;
+}
+
+function renderCards(el, hand) {
+    el.innerHTML = "";
+    hand.forEach(c => {
+        let s = document.createElement("span");
+        s.className = "card";
+        s.innerText = c;
+        el.appendChild(s);
+    });
+}
+
+function updateUI() {
+    renderCards(playerCards, player);
+    renderCards(dealerCards, dealer);
+    playerSum.innerText = value(player);
+    dealerSum.innerText = value(dealer);
+}
+
+window.onload = () => {
+    let user = localStorage.getItem("snusUser");
+    if (user) showCasino(user);
+};
+</script>
+
+</body>
+</html>
+
+
+
