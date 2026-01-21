@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Snus Slots – Blackjack</title>
+
+<style>
+body {
+  background: radial-gradient(circle at top, #1b1b1b, #000);
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+.game {
+  max-width: 600px;
+  margin: auto;
+}
+
+.area {
+  margin: 20px 0;
+}
+
+.card-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.card {
+  width: 70px;
+  height: 100px;
+  background: white;
+  color: black;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: draw 0.3s ease;
+}
+
+@keyframes draw {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.hit {
+  background: #f1c40f;
+}
+
+.reset {
+  background: #2ecc71;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🃏 Snus Slots – Blackjack</h2>
+
+<div class="game">
+
+  <div class="area">
+    <h3>Dealer</h3>
+    <div id="dealer-cards" class="card-row"></div>
+  </div>
+
+  <div class="area">
+    <h3>Du</h3>
+    <div id="player-cards" class="card-row"></div>
+  </div>
+
+  <button class="hit" onclick="playerHit()">Karte ziehen</button>
+  <button class="reset" onclick="startGame()">Erneut spielen</button>
+
+</div>
+
+<script>
+const suits = ["♠", "♥", "♦", "♣"];
+const values = [
+  {name:"A", value:11},
+  {name:"2", value:2},
+  {name:"3", value:3},
+  {name:"4", value:4},
+  {name:"5", value:5},
+  {name:"6", value:6},
+  {name:"7", value:7},
+  {name:"8", value:8},
+  {name:"9", value:9},
+  {name:"10", value:10},
+  {name:"J", value:10},
+  {name:"Q", value:10},
+  {name:"K", value:10}
+];
+
+let deck = [];
+let playerHand = [];
+let dealerHand = [];
+
+function createDeck() {
+  deck = [];
+  for (let s of suits) {
+    for (let v of values) {
+      deck.push({ display: v.name + s, value: v.value });
+    }
+  }
+  deck.sort(() => Math.random() - 0.5);
+}
+
+function drawCard(hand, target) {
+  const card = deck.pop();
+  hand.push(card);
+
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerText = card.display;
+
+  document.getElementById(target).appendChild(div);
+}
+
+function startGame() {
+  document.getElementById("player-cards").innerHTML = "";
+  document.getElementById("dealer-cards").innerHTML = "";
+
+  playerHand = [];
+  dealerHand = [];
+
+  createDeck();
+
+  drawCard(playerHand, "player-cards");
+  drawCard(dealerHand, "dealer-cards");
+}
+
+function playerHit() {
+  drawCard(playerHand, "player-cards");
+}
+
+startGame();
+</script>
+
+</body>
+</html>
