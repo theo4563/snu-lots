@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Snus Slots</title>
+
 <style>
 body {
     font-family: "Segoe UI", Arial, sans-serif;
@@ -12,7 +13,6 @@ body {
     margin: 0;
 }
 
-/* LOGIN BOX */
 .container {
     width: 340px;
     margin: 120px auto;
@@ -34,10 +34,8 @@ input {
     border-radius: 10px;
     border: none;
     outline: none;
-    font-size: 15px;
 }
 
-/* BUTTONS */
 button {
     padding: 12px 24px;
     background: linear-gradient(135deg, gold, orange);
@@ -47,28 +45,22 @@ button {
     font-weight: bold;
     margin: 6px;
     box-shadow: 0 6px 15px rgba(255,165,0,0.4);
-    transition: all 0.2s ease;
 }
 
 button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(255,165,0,0.6);
 }
 
-/* TOPBAR */
 .topbar {
     background: linear-gradient(90deg, #000, #111);
     padding: 15px 20px;
-    font-size: 17px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.6);
 }
 
 .hidden { display: none; }
 
-/* SPIELE */
 .game-box {
     background: linear-gradient(145deg, #1c1c1c, #121212);
     padding: 22px;
@@ -77,19 +69,9 @@ button:hover {
     border-radius: 18px;
     cursor: pointer;
     font-size: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-    transition: all 0.25s ease;
 }
 
-.game-box:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 40px rgba(255,215,0,0.4);
-}
-
-/* BLACKJACK */
-.cards {
-    margin: 15px;
-}
+.cards { margin: 15px; }
 
 .card {
     display: inline-flex;
@@ -99,18 +81,16 @@ button:hover {
     padding: 12px;
     min-width: 55px;
     min-height: 80px;
-    background: linear-gradient(145deg, #fff, #eaeaea);
+    background: white;
     color: black;
     border-radius: 12px;
-    font-size: 20px;
     font-weight: bold;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-    animation: drawCard 0.35s ease;
+    animation: drawCard 0.3s ease;
 }
 
 @keyframes drawCard {
-    from { opacity: 0; transform: translateY(-25px) scale(0.9); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .bet-box {
@@ -136,67 +116,76 @@ button:hover {
 <!-- CASINO -->
 <div id="casinoPage" class="hidden">
 
-    <div class="topbar">
-        <div>
-            👤 <span id="userText"></span> |
-            💰 <span id="balanceText"></span> Chips
-        </div>
-        <button onclick="logout()">Abmelden</button>
+<div class="topbar">
+    <div>
+        👤 <span id="userText"></span> |
+        💰 <span id="balanceText"></span> Chips
+    </div>
+    <button onclick="logout()">Abmelden</button>
+</div>
+
+<div id="gameMenu">
+    <h1>🎮 Casino Lobby</h1>
+
+    <button onclick="dailyBonus()">🎁 Tagesbonus</button>
+    <p id="bonusMsg"></p>
+
+    <button onclick="openQuiz()">🧠 Quiz</button>
+
+    <div class="game-box" onclick="openBlackjack()">🃏 Blackjack</div>
+    <div class="game-box">🎰 Slots – kommt bald</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="hidden">
+    <h1>🧠 Mini-Quiz</h1>
+    <p id="quizQuestion"></p>
+
+    <button onclick="answerQuiz(true)">A</button>
+    <button onclick="answerQuiz(false)">B</button>
+
+    <p id="quizResult"></p>
+    <button onclick="backToMenu()">Zurück</button>
+</div>
+
+<!-- BLACKJACK -->
+<div id="blackjack" class="hidden">
+    <h1>🃏 Blackjack</h1>
+
+    <div class="bet-box">
+        Einsatz:
+        <button onclick="setBet(50)">50</button>
+        <button onclick="setBet(100)">100</button>
+        <button onclick="setBet(200)">200</button>
+        <p>Einsatz: <b><span id="betText">0</span></b></p>
     </div>
 
-    <!-- SPIELE -->
-    <div id="gameMenu">
-        <h1>🎮 Spiele</h1>
-        <div class="game-box" onclick="openBlackjack()">🃏 Blackjack</div>
-        <div class="game-box">🎰 Slots – kommt bald</div>
-        <div class="game-box">🎲 Roulette – kommt bald</div>
-    </div>
+    <h3>Dealer</h3>
+    <div class="cards" id="dealerCards"></div>
+    <p>Summe: <span id="dealerSum"></span></p>
 
-    <!-- BLACKJACK -->
-    <div id="blackjack" class="hidden">
-        <h1>🃏 Blackjack</h1>
+    <h3>Du</h3>
+    <div class="cards" id="playerCards"></div>
+    <p>Summe: <span id="playerSum"></span></p>
 
-        <div class="bet-box">
-            Einsatz:
-            <button onclick="setBet(50)">50</button>
-            <button onclick="setBet(100)">100</button>
-            <button onclick="setBet(200)">200</button>
-            <p>Einsatz: <b><span id="betText">0</span></b></p>
-        </div>
+    <button onclick="hit()">Karte ziehen</button>
+    <button onclick="stand()">Stand</button>
+    <button onclick="newGame()">Erneut spielen</button>
+    <button onclick="backToMenu()">Zurück</button>
 
-        <h3>Dealer</h3>
-        <div class="cards" id="dealerCards"></div>
-        <p>Summe: <span id="dealerSum"></span></p>
-
-        <hr>
-
-        <h3>Du</h3>
-        <div class="cards" id="playerCards"></div>
-        <p>Summe: <span id="playerSum"></span></p>
-
-        <button onclick="hit()">Karte ziehen</button>
-        <button onclick="stand()">Stand</button>
-        <button onclick="newGame()">Erneut spielen</button>
-        <button onclick="backToMenu()">Zurück</button>
-
-        <p id="result"></p>
-    </div>
+    <p id="result"></p>
+</div>
 
 </div>
 
 <script>
-let balance = 1000;
-let bet = 0;
-let player = [];
-let dealer = [];
-let gameOver = false;
-
+let balance = 1000, bet = 0, player = [], dealer = [], gameOver = false;
 const suits = ["♠","♥","♦","♣"];
 const values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
 
 function login() {
     if (!username.value || !password.value) {
-        msg.innerText = "Bitte Benutzername & Passwort eingeben!";
+        msg.innerText = "Bitte alles ausfüllen!";
         return;
     }
     localStorage.setItem("snusUser", username.value);
@@ -204,18 +193,15 @@ function login() {
 }
 
 function logout() {
-    localStorage.removeItem("snusUser");
-    casinoPage.classList.add("hidden");
-    loginBox.style.display = "block";
+    localStorage.clear();
+    location.reload();
 }
 
 function showCasino(user) {
     loginBox.style.display = "none";
     casinoPage.classList.remove("hidden");
     userText.innerText = user;
-
-    let saved = localStorage.getItem("snusBalance");
-    if (saved) balance = parseInt(saved);
+    balance = parseInt(localStorage.getItem("snusBalance")) || 1000;
     updateBalance();
 }
 
@@ -224,122 +210,117 @@ function updateBalance() {
     localStorage.setItem("snusBalance", balance);
 }
 
+function dailyBonus() {
+    const last = localStorage.getItem("lastBonus");
+    const now = Date.now();
+    if (last && now - last < 86400000) {
+        bonusMsg.innerText = "⏳ Bonus schon abgeholt!";
+        return;
+    }
+    balance += 200;
+    updateBalance();
+    localStorage.setItem("lastBonus", now);
+    bonusMsg.innerText = "🎉 +200 Chips erhalten!";
+}
+
+function openQuiz() {
+    gameMenu.classList.add("hidden");
+    quiz.classList.remove("hidden");
+    quizQuestion.innerText = "Was ist HTML?\nA: Auszeichnungssprache\nB: Programmiersprache";
+}
+
+function answerQuiz(correct) {
+    if (correct) {
+        balance += 150;
+        updateBalance();
+        quizResult.innerText = "✅ Richtig! +150 Chips";
+    } else {
+        quizResult.innerText = "❌ Falsch!";
+    }
+}
+
 function openBlackjack() {
     gameMenu.classList.add("hidden");
     blackjack.classList.remove("hidden");
     bet = 0;
     betText.innerText = bet;
-    newGame();
 }
 
 function backToMenu() {
     blackjack.classList.add("hidden");
+    quiz.classList.add("hidden");
     gameMenu.classList.remove("hidden");
 }
 
-function setBet(amount) {
-    if (amount > balance) {
-        alert("Nicht genug Chips!");
-        return;
-    }
-    bet = amount;
+function setBet(a) {
+    if (a > balance) return alert("Nicht genug Chips");
+    bet = a;
     betText.innerText = bet;
 }
 
 function draw() {
-    return {
-        value: values[Math.floor(Math.random() * values.length)],
-        suit: suits[Math.floor(Math.random() * suits.length)]
-    };
+    return { value: values[Math.floor(Math.random()*values.length)],
+             suit: suits[Math.floor(Math.random()*suits.length)] };
 }
 
-function handValue(hand) {
-    let sum = 0;
-    let aces = 0;
-
-    hand.forEach(c => {
-        if (c.value === "A") {
-            sum += 11;
-            aces++;
-        } else if (["J","Q","K"].includes(c.value)) sum += 10;
-        else sum += parseInt(c.value);
+function handValue(h) {
+    let sum = 0, aces = 0;
+    h.forEach(c=>{
+        if(c.value==="A"){sum+=11;aces++}
+        else if(["J","Q","K"].includes(c.value)) sum+=10;
+        else sum+=parseInt(c.value);
     });
-
-    while (sum > 21 && aces > 0) {
-        sum -= 10;
-        aces--;
-    }
+    while(sum>21 && aces--) sum-=10;
     return sum;
 }
 
 function newGame() {
-    if (bet === 0) {
-        result.innerText = "⚠️ Bitte zuerst Einsatz wählen!";
-        return;
-    }
-    player = [draw()];
-    dealer = [{...draw(), hidden: true}];
-    gameOver = false;
-    result.innerText = "";
+    if(!bet) return result.innerText="⚠ Einsatz wählen!";
+    player=[draw()];
+    dealer=[{...draw(),hidden:true}];
+    gameOver=false;
+    result.innerText="";
     updateUI();
 }
 
 function hit() {
-    if (gameOver) return;
+    if(gameOver) return;
     player.push(draw());
-    if (handValue(player) > 21) end("❌ Du hast verloren", -bet);
+    if(handValue(player)>21) end("❌ Verloren",-bet);
     updateUI();
 }
 
 function stand() {
-    dealer[0].hidden = false;
-    while (handValue(dealer) < 17) dealer.push(draw());
-
-    let p = handValue(player);
-    let d = handValue(dealer);
-
-    if (d > 21 || p > d) end("✅ Du hast gewonnen!", bet);
-    else if (p === d) end("➖ Unentschieden", 0);
-    else end("❌ Dealer gewinnt", -bet);
-
+    dealer[0].hidden=false;
+    while(handValue(dealer)<17) dealer.push(draw());
+    let p=handValue(player), d=handValue(dealer);
+    if(d>21||p>d) end("✅ Gewonnen!",bet);
+    else if(p===d) end("➖ Unentschieden",0);
+    else end("❌ Dealer gewinnt",-bet);
     updateUI();
 }
 
-function end(text, money) {
-    gameOver = true;
-    balance += money;
-    updateBalance();
-    result.innerText = text;
-}
+function end(t,m){gameOver=true;balance+=m;updateBalance();result.innerText=t;}
 
-function renderCards(el, hand) {
-    el.innerHTML = "";
-    hand.forEach(c => {
-        let s = document.createElement("span");
-        s.className = "card";
-        s.innerText = c.hidden ? "🂠" : c.value + c.suit;
+function render(el,h){
+    el.innerHTML="";
+    h.forEach(c=>{
+        let s=document.createElement("span");
+        s.className="card";
+        s.innerText=c.hidden?"🂠":c.value+c.suit;
         el.appendChild(s);
     });
 }
 
-function updateUI() {
-    renderCards(playerCards, player);
-    renderCards(dealerCards, dealer);
-    playerSum.innerText = handValue(player);
-    dealerSum.innerText = dealer[0].hidden ? "?" : handValue(dealer);
+function updateUI(){
+    render(playerCards,player);
+    render(dealerCards,dealer);
+    playerSum.innerText=handValue(player);
+    dealerSum.innerText=dealer[0].hidden?"?":handValue(dealer);
 }
 
-window.onload = () => {
-    let user = localStorage.getItem("snusUser");
-    if (user) showCasino(user);
-};
+window.onload=()=>{let u=localStorage.getItem("snusUser");if(u)showCasino(u);}
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
