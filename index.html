@@ -9,9 +9,9 @@ body {
     font-family: "Segoe UI", Arial, sans-serif;
     background: radial-gradient(circle at top, #2c5364, #0f2027 55%, #000 100%);
     color: #f5f5f5;
-    text-align: center;
     margin: 0;
     min-height: 100vh;
+    text-align: center;
 }
 
 /* GLASS CONTAINER */
@@ -37,7 +37,6 @@ input {
     font-size: 15px;
 }
 
-/* LUXUS BUTTON */
 button {
     padding: 12px 28px;
     background: linear-gradient(135deg, #ffd700, #ff9f00);
@@ -46,17 +45,12 @@ button {
     cursor: pointer;
     font-weight: 800;
     margin: 6px;
-    box-shadow:
-        0 6px 20px rgba(255,165,0,0.6),
-        inset 0 0 6px rgba(255,255,255,0.4);
-    transition: all 0.25s ease;
+    box-shadow: 0 6px 20px rgba(255,165,0,0.6);
+    transition: 0.25s;
 }
 
 button:hover {
     transform: translateY(-4px) scale(1.05);
-    box-shadow:
-        0 12px 30px rgba(255,215,0,0.9),
-        inset 0 0 8px rgba(255,255,255,0.6);
 }
 
 .topbar {
@@ -65,14 +59,10 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow:
-        0 5px 30px rgba(0,0,0,0.8),
-        inset 0 -1px 0 rgba(255,215,0,0.3);
 }
 
 .hidden { display: none; }
 
-/* GAME BOX */
 .game-box {
     background: linear-gradient(160deg, #1f1f1f, #0d0d0d);
     padding: 26px;
@@ -82,20 +72,8 @@ button:hover {
     cursor: pointer;
     font-size: 22px;
     border: 1px solid rgba(255,215,0,0.2);
-    box-shadow:
-        0 18px 60px rgba(0,0,0,0.85),
-        0 0 25px rgba(255,215,0,0.2);
-    transition: all 0.3s ease;
 }
 
-.game-box:hover {
-    transform: translateY(-6px) scale(1.06);
-    box-shadow:
-        0 30px 80px rgba(0,0,0,0.95),
-        0 0 35px rgba(255,215,0,0.6);
-}
-
-/* CARDS */
 .cards { margin: 18px; }
 
 .card {
@@ -105,26 +83,113 @@ button:hover {
     margin: 10px;
     min-width: 64px;
     min-height: 96px;
-    background: linear-gradient(145deg, #fff, #eaeaea);
+    background: white;
     color: black;
     border-radius: 18px;
     font-size: 22px;
-    font-weight: 800;
-    box-shadow:
-        0 12px 30px rgba(0,0,0,0.55),
-        inset 0 0 6px rgba(0,0,0,0.25);
-    animation: drawCard 0.4s ease;
+    font-weight: bold;
 }
 
-@keyframes drawCard {
-    from { opacity: 0; transform: translateY(-30px) scale(0.85); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+/* 🎡 ROULETTE */
+.roulette-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
 }
+
+.roulette-wheel {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+	
+	position: relative;
+	overflow: hidden;
+
+    background:
+        conic-gradient(
+            red 0deg 9.7deg,
+            black 9.7deg 19.4deg,
+            red 19.4deg 29.1deg,
+            black 29.1deg 38.8deg,
+            red 38.8deg 48.5deg,
+            black 48.5deg 58.2deg,
+            red 58.2deg 67.9deg,
+            black 67.9deg 77.6deg,
+            red 77.6deg 87.3deg,
+            black 87.3deg 97deg,
+            green 97deg 106.7deg,
+            red 106.7deg 116.4deg,
+            black 116.4deg 126.1deg,
+            red 126.1deg 135.8deg,
+            black 135.8deg 145.5deg,
+            red 145.5deg 155.2deg,
+            black 155.2deg 164.9deg,
+            red 164.9deg 174.6deg,
+            black 174.6deg 184.3deg,
+            red 184.3deg 194deg,
+            black 194deg 203.7deg,
+            red 203.7deg 213.4deg,
+            black 213.4deg 223.1deg,
+            red 223.1deg 232.8deg,
+            black 232.8deg 242.5deg,
+            red 242.5deg 252.2deg,
+            black 252.2deg 261.9deg,
+            red 261.9deg 271.6deg,
+            black 271.6deg 281.3deg,
+            red 281.3deg 291deg,
+            black 291deg 300.7deg,
+            red 300.7deg 310.4deg,
+            black 310.4deg 320.1deg,
+            red 320.1deg 329.8deg,
+            black 329.8deg 339.5deg,
+            red 339.5deg 360deg
+        );
+		
+    border: 6px solid #d4af37;
+    box-shadow:
+        0 0 40px rgba(255,215,0,0.4),
+        inset 0 0 20px rgba(0,0,0,0.7);
+}
+
+.ball {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+
+    /* 🎯 WICHTIG */
+    top: 50%;
+    left: 50%;
+    transform: rotate(0deg) translateX(115px);
+
+    box-shadow: 0 0 10px rgba(255,255,255,0.9);
+}
+
+
+.rolling {
+    animation: rollBall 2.5s cubic-bezier(.2,.8,.3,1) forwards;
+}
+
+@keyframes rollBall {
+    from {
+        transform: rotate(0deg) translateX(115px);
+    }
+    to {
+        transform: rotate(var(--ball-rotation)) translateX(115px);
+    }
+}
+
+
+
+
 </style>
 </head>
 
 <body>
 
+<!-- LOGIN -->
 <div class="container" id="loginBox">
     <h2>🎰 Snus Slots Login</h2>
     <input id="username" placeholder="Benutzername">
@@ -133,6 +198,7 @@ button:hover {
     <p id="msg"></p>
 </div>
 
+<!-- CASINO -->
 <div id="casinoPage" class="hidden">
 <div class="topbar">
     <div>👤 <span id="userText"></span> | 💰 <span id="balanceText"></span> Chips</div>
@@ -143,22 +209,15 @@ button:hover {
     <h1>🎮 Casino Lobby</h1>
     <button onclick="dailyBonus()">🎁 Tagesbonus</button>
     <p id="bonusMsg"></p>
-    <button onclick="openQuiz()">🧠 Quiz</button>
+
     <div class="game-box" onclick="openBlackjack()">🃏 Blackjack</div>
-    <div class="game-box">🎰 Slots – kommt bald</div>
+    <div class="game-box" onclick="openRoulette()">🎡 Roulette</div>
 </div>
 
-<div id="quiz" class="hidden">
-    <h1>🧠 Mini-Quiz</h1>
-    <p id="quizQuestion"></p>
-    <button onclick="answerQuiz(true)">A</button>
-    <button onclick="answerQuiz(false)">B</button>
-    <p id="quizResult"></p>
-    <button onclick="backToMenu()">Zurück</button>
-</div>
-
+<!-- BLACKJACK -->
 <div id="blackjack" class="hidden">
     <h1>🃏 Blackjack</h1>
+
     <button onclick="setBet(50)">50</button>
     <button onclick="setBet(100)">100</button>
     <button onclick="setBet(200)">200</button>
@@ -174,10 +233,37 @@ button:hover {
 
     <button onclick="hit()">Karte ziehen</button>
     <button onclick="stand()">Stand</button>
-    <button onclick="newGame()">Erneut spielen</button>
+    <button onclick="newGame()">Erneut</button>
     <button onclick="backToMenu()">Zurück</button>
+
     <p id="result"></p>
 </div>
+
+<!-- ROULETTE -->
+<div id="roulette" class="hidden">
+    <h1>🎡 Roulette</h1>
+
+	<div class="roulette-wrapper">
+		<div class="roulette-wheel" id="rouletteWheel">
+			<div class="ball" id="rouletteBall"></div>
+		</div>
+	</div>
+
+
+    <button onclick="setRouletteBet(50)">50</button>
+    <button onclick="setRouletteBet(100)">100</button>
+    <p>Einsatz: <span id="rouletteBet">0</span></p>
+
+    <button onclick="betColor('red')">🔴 Rot</button>
+    <button onclick="betColor('black')">⚫ Schwarz</button>
+
+    <br><br>
+    <button onclick="spin()">Drehen</button>
+    <button onclick="backToMenu()">Zurück</button>
+
+    <p id="rouletteResult"></p>
+</div>
+
 </div>
 
 <script>
@@ -191,30 +277,167 @@ const sounds={
 };
 const play=s=>{sounds[s].currentTime=0;sounds[s].play();};
 
-let balance=1000,bet=0,player=[],dealer=[],gameOver=false;
-const suits=["♠","♥","♦","♣"],values=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+/* GLOBAL */
+let balance=1000, bet=0, player=[], dealer=[], gameOver=false;
+let rouletteBet=0, rouletteChoice=null;
+const suits=["♠","♥","♦","♣"], values=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
 
-function login(){play("click");if(!username.value||!password.value)return msg.innerText="Bitte alles ausfüllen";localStorage.setItem("snusUser",username.value);showCasino(username.value);}
-function logout(){play("click");localStorage.clear();location.reload();}
-function showCasino(u){loginBox.style.display="none";casinoPage.classList.remove("hidden");userText.innerText=u;balance=parseInt(localStorage.getItem("snusBalance"))||1000;updateBalance();}
-function updateBalance(){balanceText.innerText=balance;localStorage.setItem("snusBalance",balance);}
-function dailyBonus(){play("bonus");const l=localStorage.getItem("lastBonus");if(l&&Date.now()-l<86400000)return bonusMsg.innerText="⏳ Schon abgeholt";balance+=200;updateBalance();localStorage.setItem("lastBonus",Date.now());bonusMsg.innerText="🎉 +200 Chips";}
-function openQuiz(){play("click");gameMenu.classList.add("hidden");quiz.classList.remove("hidden");quizQuestion.innerText="Was ist HTML?\nA: Auszeichnungssprache\nB: Programmiersprache";}
-function answerQuiz(c){play("click");if(c){balance+=150;updateBalance();quizResult.innerText="✅ +150 Chips";}else quizResult.innerText="❌ Falsch";}
-function openBlackjack(){play("click");gameMenu.classList.add("hidden");blackjack.classList.remove("hidden");}
-function backToMenu(){play("click");blackjack.classList.add("hidden");quiz.classList.add("hidden");gameMenu.classList.remove("hidden");}
-function setBet(a){play("click");if(a>balance)return alert("Nicht genug Chips");bet=a;betText.innerText=bet;}
+/* LOGIN */
+function login(){
+    play("click");
+    if(!username.value||!password.value) return msg.innerText="Bitte alles ausfüllen";
+    localStorage.setItem("snusUser",username.value);
+    showCasino(username.value);
+}
+function logout(){localStorage.clear();location.reload();}
+function showCasino(u){
+    loginBox.style.display="none";
+    casinoPage.classList.remove("hidden");
+    userText.innerText=u;
+    balance=parseInt(localStorage.getItem("snusBalance"))||1000;
+    updateBalance();
+}
+function updateBalance(){
+    balanceText.innerText=balance;
+    localStorage.setItem("snusBalance",balance);
+}
+function dailyBonus(){
+    play("bonus");
+    balance+=200;
+    updateBalance();
+    bonusMsg.innerText="🎉 +200 Chips!";
+}
+
+/* MENU */
+function backToMenu(){
+    blackjack.classList.add("hidden");
+    roulette.classList.add("hidden");
+    gameMenu.classList.remove("hidden");
+}
+function openBlackjack(){
+    play("click");
+    gameMenu.classList.add("hidden");
+    blackjack.classList.remove("hidden");
+    bet=0; betText.innerText=0;
+}
+function openRoulette(){
+    play("click");
+    gameMenu.classList.add("hidden");
+    roulette.classList.remove("hidden");
+    rouletteBet=0; rouletteBetText.innerText=0;
+}
+
+/* BLACKJACK */
+function setBet(a){if(a>balance)return;bet=a;betText.innerText=bet;}
 function draw(){return{value:values[Math.floor(Math.random()*values.length)],suit:suits[Math.floor(Math.random()*suits.length)]};}
 function handValue(h){let s=0,a=0;h.forEach(c=>{if(c.value==="A"){s+=11;a++;}else if(["J","Q","K"].includes(c.value))s+=10;else s+=+c.value});while(s>21&&a--)s-=10;return s;}
-function newGame(){play("click");if(!bet)return result.innerText="⚠ Einsatz wählen";player=[draw()];dealer=[{...draw(),hidden:true}];gameOver=false;result.innerText="";updateUI();}
-function hit(){if(gameOver)return;play("card");player.push(draw());if(handValue(player)>21)end("❌ Verloren",-bet);updateUI();}
-function stand(){play("click");dealer[0].hidden=false;while(handValue(dealer)<17)dealer.push(draw());let p=handValue(player),d=handValue(dealer);if(d>21||p>d)end("✅ Gewonnen!",bet);else if(p===d)end("➖ Unentschieden",0);else end("❌ Dealer gewinnt",-bet);updateUI();}
-function end(t,m){gameOver=true;balance+=m;updateBalance();result.innerText=t;m>0?play("win"):m<0&&play("lose");}
-function render(el,h){el.innerHTML="";h.forEach(c=>{let s=document.createElement("span");s.className="card";s.innerText=c.hidden?"🂠":c.value+c.suit;el.appendChild(s);});}
-function updateUI(){render(playerCards,player);render(dealerCards,dealer);playerSum.innerText=handValue(player);dealerSum.innerText=dealer[0].hidden?"?":handValue(dealer);}
-window.onload=()=>{let u=localStorage.getItem("snusUser");if(u)showCasino(u);}
+function newGame(){
+    if(!bet)return;
+    player=[draw()];
+    dealer=[{...draw(),hidden:true}];
+    gameOver=false;
+    updateUI();
+}
+function hit(){
+    play("card");
+    player.push(draw());
+    if(handValue(player)>21) endBJ("❌ Verloren",-bet);
+    updateUI();
+}
+function stand(){
+    dealer[0].hidden=false;
+    while(handValue(dealer)<17) dealer.push(draw());
+    let p=handValue(player),d=handValue(dealer);
+    if(d>21||p>d) endBJ("✅ Gewonnen",bet);
+    else if(p===d) endBJ("➖ Unentschieden",0);
+    else endBJ("❌ Dealer gewinnt",-bet);
+}
+function endBJ(t,m){
+    gameOver=true;
+    balance+=m;
+    updateBalance();
+    result.innerText=t;
+    m>0?play("win"):play("lose");
+}
+function render(el,h){
+    el.innerHTML="";
+    h.forEach(c=>{
+        let s=document.createElement("span");
+        s.className="card";
+        s.innerText=c.hidden?"🂠":c.value+c.suit;
+        el.appendChild(s);
+    });
+}
+function updateUI(){
+    render(playerCards,player);
+    render(dealerCards,dealer);
+    playerSum.innerText=handValue(player);
+    dealerSum.innerText=dealer[0].hidden?"?":handValue(dealer);
+}
+
+/* ROULETTE */
+function setRouletteBet(a){if(a>balance)return;rouletteBet=a;rouletteBetText.innerText=a;}
+function betColor(c){rouletteChoice=c;}
+function spin(){
+    if(!rouletteBet || !rouletteChoice){
+        alert("Einsatz oder Farbe fehlt!");
+        return;
+    }
+
+    play("card");
+
+const wheel = document.getElementById("rouletteWheel");
+const ball  = document.getElementById("rouletteBall");
+
+// 🎯 Zufallszahl
+let number = Math.floor(Math.random() * 37);
+let color = number === 0 ? "green" : number % 2 === 0 ? "black" : "red";
+
+// 🎯 Winkel pro Feld
+const anglePerSlot = 360 / 37;
+
+// 🎯 Zielwinkel (mehrere Runden + Zielfeld)
+const targetAngle = 360 * 6 + number * anglePerSlot;
+
+// 👉 Ziel für Kugel setzen
+ball.style.setProperty("--ball-rotation", `${targetAngle}deg`);
+
+// Reset Animation
+wheel.classList.remove("spin");
+ball.classList.remove("rolling");
+void wheel.offsetWidth;
+
+// Start Animation
+wheel.classList.add("spin");
+ball.classList.add("rolling");
+
+setTimeout(() => {
+
+    if (color === rouletteChoice) {
+        balance += rouletteBet;
+        play("win");
+        rouletteResult.innerText = `🎉 ${number} (${color}) – GEWONNEN`;
+    } else {
+        balance -= rouletteBet;
+        play("lose");
+        rouletteResult.innerText = `❌ ${number} (${color}) – VERLOREN`;
+    }
+
+    updateBalance();
+
+}, 2500); // ⏱️ passt zur CSS-Animation
+
+} 
+
+
+/* AUTO LOGIN */
+window.onload=()=>{
+    let u=localStorage.getItem("snusUser");
+    if(u) showCasino(u);
+};
 </script>
 
 </body>
 </html>
+
 
