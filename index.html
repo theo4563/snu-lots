@@ -221,7 +221,10 @@ button:hover {
     <button onclick="setBet(50)">50</button>
     <button onclick="setBet(100)">100</button>
     <button onclick="setBet(200)">200</button>
-    <p>Einsatz: <span id="betText">0</span></p>
+	<button onclick="setBet(500)">500</button>
+	<button onclick="setBet(1000)">1000</button>
+	<button onclick="allIn()">💀 ALL IN</button>
+	<p>Einsatz: <span id="betText">0</span></p>
 
     <h3>Dealer</h3>
     <div class="cards" id="dealerCards"></div>
@@ -278,9 +281,35 @@ const sounds={
 const play=s=>{sounds[s].currentTime=0;sounds[s].play();};
 
 /* GLOBAL */
+/* GLOBAL */
 let balance=1000, bet=0, player=[], dealer=[], gameOver=false;
 let rouletteBet=0, rouletteChoice=null;
-const suits=["♠","♥","♦","♣"], values=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
+const rouletteNumbers = [
+  {n:0, color:"green"},
+  {n:1, color:"red"},   {n:2, color:"black"},
+  {n:3, color:"red"},   {n:4, color:"black"},
+  {n:5, color:"red"},   {n:6, color:"black"},
+  {n:7, color:"red"},   {n:8, color:"black"},
+  {n:9, color:"red"},   {n:10, color:"black"},
+  {n:11, color:"black"},{n:12, color:"red"},
+  {n:13, color:"black"},{n:14, color:"red"},
+  {n:15, color:"black"},{n:16, color:"red"},
+  {n:17, color:"black"},{n:18, color:"red"},
+  {n:19, color:"red"},  {n:20, color:"black"},
+  {n:21, color:"red"},  {n:22, color:"black"},
+  {n:23, color:"red"},  {n:24, color:"black"},
+  {n:25, color:"red"},  {n:26, color:"black"},
+  {n:27, color:"red"},  {n:28, color:"black"},
+  {n:29, color:"black"},{n:30, color:"red"},
+  {n:31, color:"black"},{n:32, color:"red"},
+  {n:33, color:"black"},{n:34, color:"red"},
+  {n:35, color:"black"},{n:36, color:"red"}
+];
+
+const suits=["♠","♥","♦","♣"],
+      values=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+
 
 /* LOGIN */
 function login(){
@@ -328,106 +357,199 @@ function openRoulette(){
 }
 
 /* BLACKJACK */
-function setBet(a){if(a>balance)return;bet=a;betText.innerText=bet;}
-function draw(){return{value:values[Math.floor(Math.random()*values.length)],suit:suits[Math.floor(Math.random()*suits.length)]};}
-function handValue(h){let s=0,a=0;h.forEach(c=>{if(c.value==="A"){s+=11;a++;}else if(["J","Q","K"].includes(c.value))s+=10;else s+=+c.value});while(s>21&&a--)s-=10;return s;}
-function newGame(){
-    if(!bet)return;
-    player=[draw()];
-    dealer=[{...draw(),hidden:true}];
-    gameOver=false;
-    updateUI();
+/* ================= BLACKJACK (NEU & STABIL) ================= */
+
+let bjBet = 0;
+let bjPlayer = [];
+let bjDealer = [];
+let bjGameOver = false;
+
+function setBet(amount){
+    if(amount > balance) return;
+    bjBet = amount;
+    betText.innerText = amount;
 }
-function hit(){
-    play("card");
-    player.push(draw());
-    if(handValue(player)>21) endBJ("❌ Verloren",-bet);
-    updateUI();
+function allIn(){
+    if(balance <= 0) return;
+    bjBet = balance;
+    betText.innerText = bjBet;
 }
-function stand(){
-    dealer[0].hidden=false;
-    while(handValue(dealer)<17) dealer.push(draw());
-    let p=handValue(player),d=handValue(dealer);
-    if(d>21||p>d) endBJ("✅ Gewonnen",bet);
-    else if(p===d) endBJ("➖ Unentschieden",0);
-    else endBJ("❌ Dealer gewinnt",-bet);
+
+
+function drawCard(){
+    const suits = ["♠","♥","♦","♣"];
+    const values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+    return {
+        value: values[Math.floor(Math.random()*values.length)],
+        suit: suits[Math.floor(Math.random()*suits.length)]
+    };
 }
-function endBJ(t,m){
-    gameOver=true;
-    balance+=m;
-    updateBalance();
-    result.innerText=t;
-    m>0?play("win"):play("lose");
-}
-function render(el,h){
-    el.innerHTML="";
-    h.forEach(c=>{
-        let s=document.createElement("span");
-        s.className="card";
-        s.innerText=c.hidden?"🂠":c.value+c.suit;
-        el.appendChild(s);
+
+function calcHand(hand){
+    let sum = 0;
+    let aces = 0;
+
+    hand.forEach(c=>{
+        if(c.value === "A"){
+            sum += 11;
+            aces++;
+        } else if(["J","Q","K"].includes(c.value)){
+            sum += 10;
+        } else {
+            sum += Number(c.value);
+        }
     });
+
+    while(sum > 21 && aces > 0){
+        sum -= 10;
+        aces--;
+    }
+    return sum;
 }
-function updateUI(){
-    render(playerCards,player);
-    render(dealerCards,dealer);
-    playerSum.innerText=handValue(player);
-    dealerSum.innerText=dealer[0].hidden?"?":handValue(dealer);
+
+function newGame(){
+    if(!bjBet) return;
+    if(bjBet > balance) return;
+
+    // 💰 Einsatz sofort abziehen
+    balance -= bjBet;
+    updateBalance();
+
+    result.innerText = "";
+
+    bjPlayer = [drawCard(), drawCard()];
+    bjDealer = [drawCard(), drawCard()];
+    bjGameOver = false;
+
+    renderBJ();
 }
+
+
+function hit(){
+    if(bjGameOver) return;
+
+    play("card");
+    bjPlayer.push(drawCard());
+
+    if(calcHand(bjPlayer) > 21){
+        endBJ("❌ Überkauft – Verloren", -bjBet);
+    }
+
+    renderBJ();
+}
+
+function stand(){
+    if(bjGameOver) return;
+
+    while(calcHand(bjDealer) < 17){
+        bjDealer.push(drawCard());
+    }
+
+    const p = calcHand(bjPlayer);
+    const d = calcHand(bjDealer);
+
+    if(d > 21 || p > d){
+        endBJ("✅ Gewonnen", bjBet * 2);
+    } else if(p === d){
+        endBJ("➖ Unentschieden", bjBet);
+    } else {
+        endBJ("❌ Dealer gewinnt", 0);
+    }
+
+    renderBJ(true);
+}
+
+
+function endBJ(text, payout){
+    bjGameOver = true;
+    balance += payout;
+    updateBalance();
+    result.innerText = text;
+
+    payout > 0 ? play("win") : play("lose");
+}
+
+
+function renderBJ(showDealer=false){
+    playerCards.innerHTML = "";
+    dealerCards.innerHTML = "";
+
+    bjPlayer.forEach(c=>{
+        const el = document.createElement("span");
+        el.className = "card";
+        el.innerText = c.value + c.suit;
+        playerCards.appendChild(el);
+    });
+
+    bjDealer.forEach((c,i)=>{
+        const el = document.createElement("span");
+        el.className = "card";
+        el.innerText = (!showDealer && i===0) ? "🂠" : c.value + c.suit;
+        dealerCards.appendChild(el);
+    });
+
+    playerSum.innerText = calcHand(bjPlayer);
+    dealerSum.innerText = showDealer ? calcHand(bjDealer) : "?";
+}
+
 
 /* ROULETTE */
 function setRouletteBet(a){if(a>balance)return;rouletteBet=a;rouletteBetText.innerText=a;}
 function betColor(c){rouletteChoice=c;}
-function spin(){
-    if(!rouletteBet || !rouletteChoice){
+function spin() {
+    if (!rouletteBet || rouletteChoice === null) {
         alert("Einsatz oder Farbe fehlt!");
         return;
     }
 
     play("card");
 
-const wheel = document.getElementById("rouletteWheel");
-const ball  = document.getElementById("rouletteBall");
+    const wheel = document.getElementById("rouletteWheel");
+    const ball  = document.getElementById("rouletteBall");
 
-// 🎯 Zufallszahl
-let number = Math.floor(Math.random() * 37);
-let color = number === 0 ? "green" : number % 2 === 0 ? "black" : "red";
+    // 🎯 Zufällige Zahl auswählen
+    const numberIndex = Math.floor(Math.random() * rouletteNumbers.length);
+    const resultNumber = rouletteNumbers[numberIndex]; // Zahl + Farbe
+    const color = resultNumber.color;
 
-// 🎯 Winkel pro Feld
-const anglePerSlot = 360 / 37;
+    // 🎯 Winkel pro Feld
+    const anglePerSlot = 360 / rouletteNumbers.length;
 
-// 🎯 Zielwinkel (mehrere Runden + Zielfeld)
-const targetAngle = 360 * 6 + number * anglePerSlot;
+    // 🎯 Zielwinkel: mehrere Runden + Index der Zahl
+    const targetAngle = 360 * 6 + numberIndex * anglePerSlot + anglePerSlot / 2;
 
-// 👉 Ziel für Kugel setzen
-ball.style.setProperty("--ball-rotation", `${targetAngle}deg`);
+    // 🎯 Setze CSS-Variable für Kugel
+    ball.style.setProperty("--ball-rotation", `${targetAngle}deg`);
 
-// Reset Animation
-wheel.classList.remove("spin");
-ball.classList.remove("rolling");
-void wheel.offsetWidth;
+    // 🎯 Reset Animation
+    wheel.classList.remove("spin");
+    ball.classList.remove("rolling");
+    void wheel.offsetWidth; // Trick für Neustart
 
-// Start Animation
-wheel.classList.add("spin");
-ball.classList.add("rolling");
+    // 🎯 Animation starten
+    wheel.classList.add("spin");
+    ball.classList.add("rolling");
 
-setTimeout(() => {
+    // 🎯 Ergebnis nach Animation
+    setTimeout(() => {
+        if (rouletteChoice === color) {
+            balance += rouletteBet;
+            play("win");
+            rouletteResult.innerText = `🎉 ${resultNumber.n} (${color}) – GEWONNEN`;
+        } else {
+            balance -= rouletteBet;
+            play("lose");
+            rouletteResult.innerText = `❌ ${resultNumber.n} (${color}) – VERLOREN`;
+        }
 
-    if (color === rouletteChoice) {
-        balance += rouletteBet;
-        play("win");
-        rouletteResult.innerText = `🎉 ${number} (${color}) – GEWONNEN`;
-    } else {
-        balance -= rouletteBet;
-        play("lose");
-        rouletteResult.innerText = `❌ ${number} (${color}) – VERLOREN`;
-    }
+        updateBalance();
+        ball.classList.remove("rolling");
 
-    updateBalance();
+    }, 2500);
+}
 
-}, 2500); // ⏱️ passt zur CSS-Animation
 
-} 
+
 
 
 /* AUTO LOGIN */
@@ -439,5 +561,8 @@ window.onload=()=>{
 
 </body>
 </html>
+
+
+
 
 
